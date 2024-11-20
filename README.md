@@ -8,7 +8,7 @@
 Canonical Snap for Bazarr \
 https://snapcraft.io/bazarr-tak
 
-## Sonarr Description
+## Bazarr Description
 <img src="/icon.png" width="100">
 Bazarr is a companion application to Sonarr and Radarr that manages and downloads subtitles based on your requirements.
 
