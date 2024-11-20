@@ -10,7 +10,8 @@ https://snapcraft.io/bazarr-tak
 
 ## Sonarr Description
 <img src="/icon.png" width="100">
-Bazarr is a companion application to Sonarr and Radarr that manages and downloads subtitles based on your requirements.\
+Bazarr is a companion application to Sonarr and Radarr that manages and downloads subtitles based on your requirements.
+
 You define your preferences by TV show or movie and Bazarr takes care of everything for you.
 
 Be aware that Bazarr doesn't scan disk to detect series and movies: It only takes care of the series and movies that are indexed in Sonarr and Radarr.
