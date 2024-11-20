@@ -1,0 +1,136 @@
+name: bazarr-tak
+summary: UnOfficial release of Bazarr
+description: |
+  **Bazarr is a companion application to Sonarr and Radarr that manages 
+  and downloads subtitles based on your requirements.**
+  You define your preferences by TV show or movie and Bazarr takes care 
+  of everything for you.
+  
+  Be aware that Bazarr doesn't scan disk to detect series and movies: 
+  It only takes care of the series and movies that are indexed in Sonarr and Radarr.
+
+  * The web interface is accessible by default at http://localhost:6767
+  * See https://bazarr.media for more details.
+
+
+  **Bazarr Release 1+**
+  * ffmpeg snap is required as dependency.
+  * Build with sqlite (database), ffmpeg + mediainfo (metadata), unar (decompress)
+  * Service is restarted on any condition.
+
+  **Post install commands required to access media folders and see resources :**
+
+  sudo snap connect bazarr-tak:removable-media
+
+  sudo snap connect bazarr-tak:mount-observe
+  
+  **!!! Files can only be written in a directory owned by 'root' !!!**
+  **!!! Home base directory content is not readable !!!**
+  
+  This is due to current behavior and restrictions of snaps by Canonical.\
+  Check documentation if you want to setup data in /home directory: https://github.com/TehAppKiller/Snapcraft-common-doc/blob/main/README.md#FAQ
+website: https://bazarr.media
+source-code: https://github.com/TehAppKiller/bazarr-tak
+issues: https://github.com/TehAppKiller/bazarr-tak/issues
+contact: mailto:tehappkiller@proton.me
+donation: https://whydonate.com/en/fundraising/help-teh-devz
+license: MIT
+icon: icon.png
+grade: stable
+confinement: strict
+base: core24
+adopt-info: bazarr
+platforms:
+  amd64:
+  arm64:
+  armhf:
+
+apps:
+  bazarr:
+    command: bin/run-bazarr.sh
+    daemon: simple
+    restart-condition: always
+    plugs:
+      - mount-observe
+      - network
+      - network-bind
+      - removable-media
+      - home # useless for now ; if snaps are allowed to read /home folder one day...
+    environment:
+      LD_LIBRARY_PATH: $SNAP/ffmpeg-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
+      PATH: $SNAP/ffmpeg-platform/usr/bin:$PATH
+      
+plugs:
+  ffmpeg-2404:
+    interface: content
+    target: ffmpeg-platform
+    default-provider: ffmpeg-2404
+
+parts:
+  bazarr:
+    plugin: python
+    python-requirements:
+      - requirements.txt
+    source: .
+    override-pull: |
+      # Pull
+      rm -rf $CRAFT_PART_SRC/{,.[!.],..?}*
+      download_url=$(curl -sL https://api.github.com/repos/morpheus65535/bazarr/releases/latest | sed -nre "s/^.*\"browser_download_url\": \"([^\"]*)\".*/\1/p")
+      wget "${download_url}" -O srcfile
+      unzip srcfile
+      
+      craftctl default
+    override-build: |
+      # Get Last Source Tag version and Check Snap (with same Source) version
+      src_version=$(curl -sL https://api.github.com/repos/morpheus65535/bazarr/releases/latest | sed -nre "s/^.*\/download\/v([^\/]*)\/.*/\1/p")
+      echo "Source last tag: ${src_version}"
+      snap_last_version=$(curl -sL -H "Snap-Device-Series: 16" "https://api.snapcraft.io/v2/snaps/info/bazarr-tak?architecture=${CRAFT_ARCH_BUILD_FOR}&fields=version" | sed -nre "s/^.*\"stable\"\,\"track\"\:\"latest\"\}\,\"version\"\:\"([^\"]*)\".*/\1/p");
+      echo "Snap last version: ${snap_last_version}"
+      snap_build_with_same_version=$(echo $snap_last_version | sed -nre "s/^($src_version.*).*/\1/p");
+      # Same version ?
+      if [ -z "$snap_build_with_same_version" ]
+      then
+        new_snap_version="${src_version}";
+      else
+        # Get snap build version
+        snap_build=$(echo $snap_build_with_same_version | sed -nre 's/^.*-v([0-9]*).*/\1/p');
+        # Already a build version ?
+        if [ -z "$snap_build" ]
+        then
+          # init @v2
+          new_snap_build="2";
+        else
+          # increment @v+1
+          new_snap_build=$(($snap_build+1));
+        fi
+
+        new_snap_version="${src_version}-v${new_snap_build}";
+      fi
+
+       craftctl set version=$new_snap_version
+
+      # Build
+      INST_DIR="$CRAFT_PART_INSTALL/Bazarr"
+      mkdir -p "$INST_DIR"
+      cp -a ./* $INST_DIR
+      
+      craftctl default
+    build-packages:
+      - curl
+      - wget
+      - unzip
+
+  local:
+    plugin: dump
+    source: snap/local
+    override-prime: |
+      craftctl default
+      chmod +rx $CRAFT_PRIME/bin/run-bazarr.sh
+
+  deps:
+    plugin: nil
+    source: .
+    stage-packages:
+      - sqlite3
+      - unar
+      - mediainfo
