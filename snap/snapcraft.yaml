@@ -134,3 +134,6 @@ parts:
       - sqlite3
       - unar
       - mediainfo
+      # armhf specifics
+      - libxml2-dev:armhf
+      - libxslt1-dev:armhf
