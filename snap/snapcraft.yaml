@@ -2,7 +2,7 @@ name: bazarr-tak
 summary: UnOfficial release of Bazarr
 description: |
   **Bazarr is a companion application to Sonarr and Radarr that manages 
-  and downloads subtitles based on your requirements.**
+  and downloads subtitles based on your requirements.**\
   You define your preferences by TV show or movie and Bazarr takes care 
   of everything for you.
   
@@ -24,7 +24,7 @@ description: |
 
   sudo snap connect bazarr-tak:mount-observe
   
-  **!!! Files can only be written in a directory owned by 'root' !!!**
+  **!!! Files can only be written in a directory owned by 'root' !!!**\
   **!!! Home base directory content is not readable !!!**
   
   This is due to current behavior and restrictions of snaps by Canonical.\
@@ -134,6 +134,6 @@ parts:
       - sqlite3
       - unar
       - mediainfo
-      # armhf specifics
-      - libxml2-dev:armhf
-      - libxslt1-dev:armhf
+      - to armhf:
+        - libxml2-dev
+        - libxslt1-dev
