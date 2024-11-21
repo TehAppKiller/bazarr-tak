@@ -57,14 +57,22 @@ apps:
       - removable-media
       - home # useless for now ; if snaps are allowed to read /home folder one day...
     environment:
-      LD_LIBRARY_PATH: $SNAP/ffmpeg-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
-      PATH: $SNAP/ffmpeg-platform/usr/bin:$PATH
+      LD_LIBRARY_PATH: $SNAP/ffmpeg-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/gnome-platform/usr/lib/:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio/:$SNAP/gpu-2404/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
+      PATH: $SNAP/ffmpeg-platform/usr/bin:$SNAP/gnome-platform/usr/bin:$SNAP/gpu-2404/usr/bin:$PATH
       
 plugs:
-  ffmpeg-2404:
+  ffmpeg-2404: # Required by Bazarr
     interface: content
     target: ffmpeg-platform
     default-provider: ffmpeg-2404
+  gnome-46-2404: # Required by ffmpeg
+    interface: content
+    target: gnome-platform
+    default-provider: gnome-46-2404
+  gpu-2404: # Required by ffmpeg
+    interface: content
+    target: gpu-2404
+    default-provider: mesa-2404
 
 parts:
   bazarr:
@@ -134,5 +142,6 @@ parts:
       - sqlite3
       - unar
       - mediainfo
-      - to armhf:
-        - python3-lxml # as lxml install fails
+      - libxml2
+      - libxslt1.1
+      - libatlas3-base
