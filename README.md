@@ -22,7 +22,6 @@ See https://bazarr.media for more details.
 The web interface is accessible by default at http://localhost:6767
 
 Bazarr Release 1+\
-ffmpeg snap is required as Bazarr dependency.\
 Build with sqlite (database), ffmpeg + mediainfo (metadata), unar (decompress)\
 Service is restarted on any condition.
 
