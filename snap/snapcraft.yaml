@@ -14,8 +14,7 @@ description: |
 
 
   **Bazarr Release 1+**
-  * ffmpeg snap is required as Bazarr dependency.
-  * gnome and mesa snaps are required as ffmpeg dependencies.
+  * ffmpeg snap is required as dependency.
   * Build with sqlite (database), ffmpeg + mediainfo (metadata), unar (decompress)
   * Service is restarted on any condition.
 
@@ -58,22 +57,8 @@ apps:
       - removable-media
       - home # useless for now ; if snaps are allowed to read /home folder one day...
     environment:
-      LD_LIBRARY_PATH: $SNAP/ffmpeg-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/gnome-platform/usr/lib/:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio/:$SNAP/gpu-2404/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
-      PATH: $SNAP/ffmpeg-platform/usr/bin:$SNAP/gnome-platform/usr/bin:$SNAP/gpu-2404/usr/bin:$PATH
-      
-plugs:
-  ffmpeg-2404: # Required by Bazarr
-    interface: content
-    target: ffmpeg-platform
-    default-provider: ffmpeg-2404
-  gnome-46-2404: # Required by ffmpeg
-    interface: content
-    target: gnome-platform
-    default-provider: gnome-46-2404
-  gpu-2404: # Required by ffmpeg
-    interface: content
-    target: gpu-2404
-    default-provider: mesa-2404
+      LD_LIBRARY_PATH: $SNAP/usr/lib/:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio/:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/atlas/:$LD_LIBRARY_PATH
+      PATH: $SNAP/usr/bin/:$PATH
 
 parts:
   bazarr:
@@ -140,9 +125,59 @@ parts:
     plugin: nil
     source: .
     stage-packages:
-      - sqlite3
-      - unar
-      - mediainfo
-      - libxml2
-      - libxslt1.1
-      - libatlas3-base
+      - python3
+      - sqlite3 # required by Bazarr (database)
+      - unar # required by Bazarr (decompress files)
+      - ffmpeg # required by Bazarr (codecs info...)
+      - mediainfo # optional alternative to ffprobe for Bazarr codecs info (Bazar menu option)
+      - libxml2 # required by python-lxml
+      - libxslt1.1 # required by python-lxml
+      - libatlas3-base # required by numpy and ffmpeg (blas+lapack)
+      - libglu1-mesa # required by ffmpeg caca
+      - libglut3.12 # required by ffmpeg caca
+    override-prime: |
+      craftctl default
+      # TODO: Compile own ffmpeg
+      # Remove ffmpeg graphic drivers
+      rm -rf "usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/dri"
+      # Remove unused libs
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libGLX_mesa*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libLLVM-17*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_amdgpu*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_nouveau*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_radeon*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libexslt*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfftw3_omp*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfftw3_threads*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_grapheme_lang*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_grapheme_lex*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_indic_lex*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_time_awb*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libgccpp*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libgctba*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libhwy_contrib*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libhwy_test*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicuio*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutest*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjacknet*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjackserver*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/liblapack_atlas*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libobjc_gc*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsensors*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsphinxad*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libzvbi-chains*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcaca++*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcjson_utils*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_indic_lang*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libgc*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libglapi*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutu*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libpulse-simple*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libtheora.*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-dri2*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-glx*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-present*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-sync*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxshmfence*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcblas*
+      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libf77blas*
