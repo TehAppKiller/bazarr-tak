@@ -143,9 +143,9 @@ parts:
       # Remove unused libs
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libGLX_mesa*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libLLVM-17*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_amdgpu*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_nouveau*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_radeon*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_amdgpu*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_nouveau*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_radeon*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libexslt*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfftw3_omp*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfftw3_threads*
@@ -163,21 +163,21 @@ parts:
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjackserver*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/liblapack_atlas*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libobjc_gc*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsensors*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsensors*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsphinxad*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libzvbi-chains*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcaca++*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcjson_utils*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_indic_lang*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libgc*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libglapi*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libglapi*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutu*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libpulse-simple*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libtheora.*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-dri2*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-dri2*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-glx*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-present*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-sync*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxshmfence*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-present*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-sync*
+      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxshmfence*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcblas*
       rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libf77blas*
