@@ -1,4 +1,5 @@
 name: bazarr-tak
+title: bazarr-tak
 summary: UnOfficial release of Bazarr
 description: |
   **Bazarr is a companion application to Sonarr and Radarr that manages 
@@ -13,7 +14,7 @@ description: |
   * See https://bazarr.media for more details.
 
 
-  **Bazarr Release 1+**
+  **Bazarr Release**
   * ffmpeg snap is required as dependency.
   * Build with sqlite (database), ffmpeg + mediainfo (metadata), unar (decompress)
   * Service is restarted on any condition.
@@ -38,15 +39,24 @@ license: MIT
 icon: icon.png
 grade: stable
 confinement: strict
-base: core24
+base: core26
 adopt-info: bazarr
 platforms:
   amd64:
   arm64:
   armhf:
+  
+plugs:
+  ffmpeg:
+    interface: content
+    target: $SNAP/ffmpeg
+    default-provider: ffmpeg-tak # snap used
+    content: ffmpeg # slot name called
 
 apps:
   bazarr:
+    extensions: [gpu]
+    command-chain: [snap/command-chain/gpu-2604-wrapper]
     command: bin/run-bazarr.sh
     daemon: simple
     restart-condition: always
@@ -57,11 +67,19 @@ apps:
       - removable-media
       - home # useless for now ; if snaps are allowed to read /home folder one day...
     environment:
-      LD_LIBRARY_PATH: $SNAP/usr/lib/:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio/:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/atlas/:$LD_LIBRARY_PATH
-      PATH: $SNAP/usr/bin/:$PATH
+      LD_LIBRARY_PATH: $SNAP/ffmpeg/usr/lib/:$SNAP/ffmpeg/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/:$SNAP/ffmpeg/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio/:$SNAP/ffmpeg/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/sdl2-classic/:$LD_LIBRARY_PATH
+      PATH: $SNAP/ffmpeg/usr/bin/:$PATH
+      PYTHONPATH: $SNAP/lib/python3.14/site-packages:$PYTHONPATH # Temp fix as python-plugin does not work ; as using python runtime with venv modules ; does NOT prevent python-plugin mess with the python env of snapcraft build
 
 parts:
+  python-runtime:
+    plugin: nil
+    stage-packages:
+      - python3-venv # (python3 does not include venv)
+      
   bazarr:
+    after:
+      - python-runtime
     plugin: python
     python-requirements:
       - requirements.txt
@@ -125,59 +143,13 @@ parts:
     plugin: nil
     source: .
     stage-packages:
-      - python3
       - sqlite3 # required by Bazarr (database)
       - unar # required by Bazarr (decompress files)
-      - ffmpeg # required by Bazarr (codecs info...)
+      #- ffmpeg # required by Bazarr (codecs info...)
       - mediainfo # optional alternative to ffprobe for Bazarr codecs info (Bazar menu option)
-      - libxml2 # required by python-lxml
+      - libxml2-16 # required by python-lxml
       - libxslt1.1 # required by python-lxml
-      - libatlas3-base # required by numpy and ffmpeg (blas+lapack)
-      - libglu1-mesa # required by ffmpeg caca
-      - libglut3.12 # required by ffmpeg caca
-    override-prime: |
-      craftctl default
-      # TODO: Compile own ffmpeg
-      # Remove ffmpeg graphic drivers
-      rm -rf "usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/dri"
-      # Remove unused libs
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libGLX_mesa*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libLLVM-17*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_amdgpu*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_nouveau*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_radeon*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libexslt*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfftw3_omp*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfftw3_threads*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_grapheme_lang*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_grapheme_lex*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_indic_lex*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_time_awb*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libgccpp*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libgctba*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libhwy_contrib*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libhwy_test*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicuio*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutest*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjacknet*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjackserver*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/liblapack_atlas*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libobjc_gc*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsensors*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsphinxad*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libzvbi-chains*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcaca++*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcjson_utils*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_indic_lang*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libgc*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libglapi*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libicutu*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libpulse-simple*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libtheora.*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-dri2*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-glx*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-present*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxcb-sync*
-      #rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libxshmfence*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcblas*
-      rm -rf usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libf77blas*
+      #- libatlas3-base # required by numpy and ffmpeg (blas+lapack) ; no more needed with core26 ??
+      #- libglu1-mesa # required by ffmpeg caca ; caca removed from core26 ubuntu ffmpeg packages
+      #- libglut3.12 # required by ffmpeg caca ; caca removed from core26 ubuntu ffmpeg packages
+      
