@@ -15,7 +15,7 @@ description: |
 
 
   **Bazarr Release**
-  * ffmpeg snap is required as dependency.
+  * 'ffmpeg-tak' and 'mesa-2604' snaps are required as dependencies.
   * Build with sqlite (database), ffmpeg + mediainfo (metadata), unar (decompress)
   * Service is restarted on any condition.
 
@@ -52,6 +52,11 @@ plugs:
     target: $SNAP/ffmpeg
     default-provider: ffmpeg-tak # snap used
     content: ffmpeg # slot name called
+    
+# Add deadsnakes ppa to have access to Python 3.13
+package-repositories:
+  - type: apt
+    ppa: deadsnakes/ppa
 
 apps:
   bazarr:
@@ -69,13 +74,13 @@ apps:
     environment:
       LD_LIBRARY_PATH: $SNAP/ffmpeg/usr/lib/:$SNAP/ffmpeg/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/:$SNAP/ffmpeg/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio/:$SNAP/ffmpeg/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/sdl2-classic/:$LD_LIBRARY_PATH
       PATH: $SNAP/ffmpeg/usr/bin/:$PATH
-      PYTHONPATH: $SNAP/lib/python3.14/site-packages:$PYTHONPATH # Temp fix as python-plugin does not work ; as using python runtime with venv modules ; does NOT prevent python-plugin mess with the python env of snapcraft build
+      PYTHONPATH: $SNAP/lib/python3.13/site-packages:$PYTHONPATH # Temp fix as python-plugin does not work ; as using python runtime with venv modules ; does NOT prevent python-plugin mess with the python env of snapcraft build
 
 parts:
   python-runtime:
     plugin: nil
     stage-packages:
-      - python3-venv # (python3 does not include venv)
+      - python3.13-venv # (python3 does not include venv)
       
   bazarr:
     after:
@@ -83,6 +88,8 @@ parts:
     plugin: python
     python-requirements:
       - requirements.txt
+    build-environment:
+      - PARTS_PYTHON_INTERPRETER: python3.13
     source: .
     override-pull: |
       # Pull

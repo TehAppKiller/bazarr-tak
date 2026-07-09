@@ -21,7 +21,8 @@ See https://bazarr.media for more details.
 ## Information
 The web interface is accessible by default at http://localhost:6767
 
-Bazarr Release 1+\
+Bazarr Release \
+'ffmpeg-tak' and 'mesa-2604' snaps are required as dependencies.\
 Build with sqlite (database), ffmpeg + mediainfo (metadata), unar (decompress)\
 Service is restarted on any condition.
 
@@ -42,5 +43,6 @@ See my common doc about [FAQ](https://github.com/TehAppKiller/Snapcraft-common-d
 
 ## Building
 See my common doc about [building a snap](https://github.com/TehAppKiller/Snapcraft-common-doc/tree/main#Building).
+
 ## Versionning
 See my common doc about [versionning](https://github.com/TehAppKiller/Snapcraft-common-doc/tree/main#Versionning).
